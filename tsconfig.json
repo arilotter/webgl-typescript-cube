@@ -1,10 +1,12 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "outDir": "./build/",
         "sourceMap": true,
-        "noImplicitAny": true,
+        "noImplicitAny": false, // TODO: use `stevebest/regl-typings` so we can turn this on
         "module": "es6",
         "target": "es6",
-        "allowJs": true
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./src"
     }
 }

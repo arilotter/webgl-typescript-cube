@@ -11,15 +11,14 @@ module.exports = {
   module: {
     rules: [
       {
-        enforce: "pre",
-        test: /\.js$/,
-        loader: "source-map-loader"
-      },
-      {
-        enforce: "pre",
         test: /\.ts$/,
         exclude: /node_modules/,
         use: ["source-map-loader", "babel-loader", "ts-loader"]
+      },
+      {
+        test: /\.(glsl|frag|vert)$/,
+        use: ["raw-loader", "glslify-loader"],
+        exclude: /node_modules/
       }
     ]
   },
@@ -30,6 +29,6 @@ module.exports = {
   devServer: {
     hot: true,
     inline: true,
-    contentBase: "./build"
+    contentBase: "."
   }
 };
