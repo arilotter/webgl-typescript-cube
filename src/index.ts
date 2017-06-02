@@ -19,7 +19,7 @@ const drawCube = regl({
         view: ({ tick }) => {
             const t = 0.01 * tick;
             return mat4.lookAt([],
-                [5 * Math.cos(t), 2.5 * Math.sin(t), 5 * Math.sin(t)],
+                [5 * Math.cos(t / 4), 5 * Math.sin(t / 4), 5 * Math.sin(t / 4)],
                 [0, 0.0, 0],
                 [0, 1, 0]
             )
@@ -34,8 +34,8 @@ const drawCube = regl({
     },
 });
 
-const startColor = [250, 101, 220];
-const endColor = [50, 113, 159];
+const startColor = [255, 85, 142];
+const endColor = [0, 221, 222];
 const canvas = document.createElement('canvas');
 canvas.width = 64;
 canvas.height = 64;
@@ -51,17 +51,18 @@ const hDiff = distance(endH, startH);
 console.log(lDiff, cDiff, hDiff);
 
 for (let i = 0; i < canvas.height; i++) {
+    const fraction = i / canvas.height;
     const rgb = colorspace.lchab.rgb([
-        startL + i * lDiff,
-        startC + i * cDiff,
-        startH + i * hDiff
-    ]);
+        startL + fraction * lDiff,
+        startC + fraction * cDiff,
+        startH + fraction * hDiff
+    ]).map(Math.round);
     ctx.fillStyle = `rgb(${rgb.join(',')})`;
+    console.log(ctx.fillStyle);
     ctx.fillRect(0, i, canvas.width, 1);
 }
 
 const texture = regl.texture(canvas);
-
 
 regl.frame(() => {
     regl.clear({
