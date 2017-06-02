@@ -1,6 +1,7 @@
 import * as reglWrapper from 'regl';
 import * as resl from 'resl';
 import * as mat4 from 'gl-mat4';
+import * as colorspace from 'color-space';
 import * as cube from './cube';
 const regl = reglWrapper({
     pixelRatio: window.devicePixelRatio / 2
@@ -32,26 +33,48 @@ const drawCube = regl({
         uTexture: regl.prop('texture')
     },
 });
-// Load resources
-resl({
-    manifest: {
-        texture: {
-            type: 'image',
-            src: 'assets/cube.png',
-            parser: (data) => regl.texture({
-                data,
-                mag: 'linear',
-                min: 'linear'
-            })
-        }
-    },
-    onDone: ({ texture }) => {
-        regl.frame(() => {
-            regl.clear({
-                color: [255, 255, 255, 255],
-                depth: 1
-            });
-            drawCube({ texture });
-        });
-    }
-})
+
+const startColor = [250, 101, 220];
+const endColor = [50, 113, 159];
+const canvas = document.createElement('canvas');
+canvas.width = 64;
+canvas.height = 64;
+const ctx = canvas.getContext('2d');
+console.log(colorspace);
+const [startL, startC, startH] = colorspace.rgb.lchab(startColor);
+const [endL, endC, endH] = colorspace.rgb.lchab(endColor);
+
+const lDiff = endL - startL
+const cDiff = endC - startC;
+const hDiff = distance(endH, startH);
+
+console.log(lDiff, cDiff, hDiff);
+
+for (let i = 0; i < canvas.height; i++) {
+    const rgb = colorspace.lchab.rgb([
+        startL + i * lDiff,
+        startC + i * cDiff,
+        startH + i * hDiff
+    ]);
+    ctx.fillStyle = `rgb(${rgb.join(',')})`;
+    ctx.fillRect(0, i, canvas.width, 1);
+}
+
+const texture = regl.texture(canvas);
+
+
+regl.frame(() => {
+    regl.clear({
+        color: [255, 255, 255, 255],
+        depth: 1
+    });
+    drawCube({ texture });
+});
+
+
+function distance(alpha: number, beta: number) {
+    const phi = Math.abs(beta - alpha) % 360;
+    const distance = phi > 180 ? 360 - phi : phi;
+    const sign = (alpha - beta >= 0 && alpha - beta <= 180) || (alpha - beta <= -180 && alpha - beta >= -360) ? 1 : -1;
+    return distance * sign;
+}
