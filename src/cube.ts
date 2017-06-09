@@ -1,73 +1,19 @@
 import * as vert from "./shaders/cube.vert";
 import * as frag from "./shaders/cube.frag";
 
-const position = [
-  [-0.5, +0.5, +0.5],
-  [+0.5, +0.5, +0.5],
-  [+0.5, -0.5, +0.5],
-  [-0.5, -0.5, +0.5], // positive z face.
-  [+0.5, +0.5, +0.5],
-  [+0.5, +0.5, -0.5],
-  [+0.5, -0.5, -0.5],
-  [+0.5, -0.5, +0.5], // positive x face
-  [+0.5, +0.5, -0.5],
-  [-0.5, +0.5, -0.5],
-  [-0.5, -0.5, -0.5],
-  [+0.5, -0.5, -0.5], // negative z face
-  [-0.5, +0.5, -0.5],
-  [-0.5, +0.5, +0.5],
-  [-0.5, -0.5, +0.5],
-  [-0.5, -0.5, -0.5], // negative x face.
-  [-0.5, +0.5, -0.5],
-  [+0.5, +0.5, -0.5],
-  [+0.5, +0.5, +0.5],
-  [-0.5, +0.5, +0.5], // top face
-  [-0.5, -0.5, -0.5],
-  [+0.5, -0.5, -0.5],
-  [+0.5, -0.5, +0.5],
-  [-0.5, -0.5, +0.5] // bottom face
-];
+import createCube from "primitive-cube";
 
-const uv = [
-  [0.0, 0.0],
-  [1.0, 0.0],
-  [1.0, 1.0],
-  [0.0, 1.0], // positive z face.
-  [0.0, 0.0],
-  [1.0, 0.0],
-  [1.0, 1.0],
-  [0.0, 1.0], // positive x face.
-  [0.0, 0.0],
-  [1.0, 0.0],
-  [1.0, 1.0],
-  [0.0, 1.0], // negative z face.
-  [0.0, 0.0],
-  [1.0, 0.0],
-  [1.0, 1.0],
-  [0.0, 1.0], // negative x face.
-  [0.0, 0.0],
-  [1.0, 0.0],
-  [1.0, 1.0],
-  [0.0, 1.0], // top face
-  [0.0, 0.0],
-  [1.0, 0.0],
-  [1.0, 1.0],
-  [0.0, 1.0] // bottom face
-];
+const { positions, cells, uvs } = createCube();
+const outPositions = cells
+  .map(tri => tri.map(index => positions[index]))
+  .reduce((a, b) => a.concat(b), []);
 
-const elements = [
-  [2, 1, 0],
-  [2, 0, 3], // positive z face.
-  [6, 5, 4],
-  [6, 4, 7], // positive x face.
-  [10, 9, 8],
-  [10, 8, 11], // negative z face.
-  [14, 13, 12],
-  [14, 12, 15], // negative x face.
-  [18, 17, 16],
-  [18, 16, 19], // top face.
-  [20, 21, 22],
-  [23, 20, 22] // bottom face
-];
+const outUVs = cells
+  .map(tri => tri.map(index => uvs[index]))
+  .reduce((a, b) => a.concat(b), []);
 
-export { position, uv, elements, vert, frag };
+const faces = cells
+  .map(tri => tri.map(index => cells.indexOf(tri)))
+  .reduce((a, b) => a.concat(b), []);
+
+export { outPositions as positions, outUVs as uv, faces, vert, frag };

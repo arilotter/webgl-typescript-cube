@@ -1,17 +1,21 @@
 import * as reglWrapper from "regl";
 import * as resl from "resl";
 import * as mat4 from "gl-mat4";
+import * as colors from "nice-color-palettes/500.json";
 import * as cube from "./cube";
 const regl = reglWrapper(); // create a full screen canvas / WebGL context
-
+const colorPalette = colors[Math.floor(Math.random() * colors.length)].map(
+  hexToRgb
+);
 const drawCube = regl({
   frag: cube.frag,
   vert: cube.vert,
   attributes: {
-    position: cube.position,
-    uv: cube.uv
+    position: cube.positions,
+    uv: cube.uv,
+    face: cube.faces
   },
-  elements: cube.elements,
+  count: cube.positions.length,
   uniforms: {
     view: ({ tick }) => {
       const t = 0.01 * tick;
@@ -30,7 +34,9 @@ const drawCube = regl({
         0.01,
         10
       ),
-    time: ({ tick }) => 0.1 * tick
+    time: ({ tick }) => 0.1 * tick,
+    startColor: randomColor(),
+    endColor: randomColor()
   }
 });
 
@@ -41,3 +47,13 @@ regl.frame(() => {
   });
   drawCube();
 });
+
+function randomColor() {
+  return colorPalette[Math.floor(Math.random() * 5)];
+  // return [255.0, 85.0, 142.0].map(c => c / 255);
+}
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result.slice(1).map(c => parseInt(c, 16) / 255);
+}

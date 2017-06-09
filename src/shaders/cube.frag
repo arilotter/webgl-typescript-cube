@@ -1,13 +1,22 @@
 precision mediump float;
 
 uniform float time;
+uniform vec3 startColor;
+uniform vec3 endColor;
 varying vec2 vUv;
+varying float vFace;
 
 #pragma glslify: dither = require(glsl-dither/8x8)
 #pragma glslify: gradient = require('./gradient')
-const vec3 startColor = vec3(255.0, 85.0, 142.0) / 255.0;
-const vec3 endColor = vec3(0.0, 221.0, 222.0) / 255.0;
+const float scale = 3.0;
 void main() {
-  vec4 color = vec4(gradient(startColor, endColor, vUv.y - (sin(time / 8.0) / 2.0 + 0.5)), 1.0);
-  gl_FragColor = dither(gl_FragCoord.xy, color) * 0.4 + color * 0.5;
+  float pos;
+  if(vFace == 8.0 || vFace == 9.0) {
+    pos = 1.0;
+  } else if(vFace == 10.0 || vFace == 11.0) {
+    pos = 0.0;
+  } else {
+    pos = vUv.y;
+  }
+  gl_FragColor = vec4(gradient(startColor, endColor, ((pos - 0.5) * 0.3) + 0.5 - sin(time / 8.0) * 0.3), 1.0);
 }
