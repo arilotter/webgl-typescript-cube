@@ -18,5 +18,5 @@ void main() {
   } else {
     pos = vUv.y;
   }
-  gl_FragColor = vec4(gradient(startColor, endColor, ((pos - 0.5) * 0.3) + 0.5 - sin(time / 8.0) * 0.3), 1.0);
+  gl_FragColor = vec4(gradient(startColor, endColor, (pos - 0.5) + 0.5 - sin(time / 8.0) * 0.3), 1.0);
 }
