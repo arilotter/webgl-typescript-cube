@@ -1,49 +1,36 @@
-import * as reglWrapper from "regl";
-import * as resl from "resl";
-import * as mat4 from "gl-mat4";
-import * as cube from "./cube";
-import * as colors from "./colors";
+import reglWrapper from "regl";
+import resl from "resl";
+import createControls from "orbit-controls";
+import createCamera from "perspective-camera";
 
-let [startColor, endColor] = colors.random();
+import createCube from "./cube";
 
-let regl = reglWrapper(); // create a full screen canvas / WebGL context
-let drawCube = regl({
-  frag: cube.frag,
-  vert: cube.vert,
-  attributes: {
-    position: cube.positions,
-    uv: cube.uv,
-    face: cube.faces
-  },
-  count: cube.positions.length,
-  uniforms: {
-    view: ({ tick }) => {
-      let t = 0.01 * tick;
-      return mat4.lookAt(
-        [],
-        [5 * Math.cos(t / 4), 5 * Math.sin(t / 4), 5 * Math.sin(t / 4)],
-        [0, 0.0, 0],
-        [0, 1, 0]
-      );
-    },
-    projection: ({ viewportWidth, viewportHeight }) =>
-      mat4.perspective(
-        [],
-        Math.PI / 8,
-        viewportWidth / viewportHeight,
-        0.01,
-        10
-      ),
-    time: ({ tick }) => 0.1 * tick,
-    startColor,
-    endColor
-  }
+const regl = reglWrapper(); // create a full screen canvas / WebGL context
+const drawCube = createCube(regl);
+
+const camera = createCamera({
+  fov: 40 * Math.PI / 180,
+  near: 0.01,
+  far: 10
 });
 
-regl.frame(() => {
+const controls = createControls({
+  canvas: regl._gl.canvas,
+  distance: 4,
+  damping: 0.01
+});
+
+regl.frame(({ viewportWidth, viewportHeight }) => {
+  controls.update();
+  controls.copyInto(camera.position, camera.direction, camera.up);
+  camera.viewport = [0, 0, viewportWidth, viewportHeight];
+  camera.update();
   regl.clear({
     color: [255, 255, 255, 255],
     depth: 1
   });
-  drawCube();
+  drawCube({
+    projection: camera.projection,
+    view: camera.view
+  });
 });

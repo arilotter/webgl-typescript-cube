@@ -1,6 +1,6 @@
 import * as colors from "nice-color-palettes/500.json";
 
-function random(): number[] {
+function randomColor(): number[] {
   let randomPalette = colors[Math.floor(Math.random() * colors.length)].map(
     hexToRgb
   ) as number[][];
@@ -33,4 +33,4 @@ function luminance(rgb) {
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 }
 
-export { random };
+export default randomColor;
