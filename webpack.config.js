@@ -29,6 +29,7 @@ module.exports = {
   devServer: {
     hot: true,
     inline: true,
-    contentBase: "."
+    contentBase: ".",
+    disableHostCheck: true
   }
 };

@@ -98,5 +98,4 @@ vec3 gradient(in vec3 start_rgb, in vec3 end_rgb, in float interpolant) {
   return lch2rgb(lch);
 }
 
-
 #pragma glslify: export(gradient)

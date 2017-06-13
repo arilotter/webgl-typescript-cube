@@ -1,11 +1,10 @@
-import * as vert from "./shaders/cube.vert";
-import * as frag from "./shaders/cube.frag";
-import randomColors from "./colors";
+import * as vert from "./plane.vert";
+import * as frag from "./plane.frag";
 
-import createCube from "primitive-cube";
+import createQuad from "primitive-quad";
 import * as mat4 from "gl-mat4";
 
-const { positions, cells, uvs } = createCube();
+const { positions, cells, uvs } = createQuad();
 const outPositions = cells
   .map(tri => tri.map(index => positions[index]))
   .reduce((a, b) => a.concat(b), []);
@@ -18,9 +17,7 @@ const outFaces = cells
   .map(tri => tri.map(index => cells.indexOf(tri)))
   .reduce((a, b) => a.concat(b), []);
 
-const [startColor, endColor] = randomColors();
-
-const cube = regl =>
+const plane = (regl, startColor: number[], endColor: number[]) =>
   regl({
     frag,
     vert,
@@ -38,4 +35,4 @@ const cube = regl =>
       endColor
     }
   });
-export default cube;
+export default plane;
